@@ -1,0 +1,7 @@
+/src/vendor/
+/node_modules/
+/.opencode/
+/.qwen/
+/openspec/
+/design.pen
+.env
