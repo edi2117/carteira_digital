@@ -5,7 +5,7 @@
       <AlertMessage :message="error" type="error" />
       <form @submit.prevent="handleLogin" class="space-y-4 mt-4">
         <div>
-          <label class="block text-sm text-slate-400 mb-1">E-mail</label>
+          <label class="block text-sm text-slate-400 mb-2">E-mail</label>
           <input
             v-model="email"
             type="email"
@@ -15,7 +15,7 @@
           />
         </div>
         <div>
-          <label class="block text-sm text-slate-400 mb-1">Senha</label>
+          <label class="block text-sm text-slate-400 mb-2">Senha</label>
           <input
             v-model="password"
             type="password"
@@ -64,7 +64,7 @@ async function handleLogin() {
   } catch (err) {
     error.value = err.response?.data?.message || 'Erro ao fazer login'
   } finally {
-    loading.value = false
+   loading.value = false
   }
 }
 </script>

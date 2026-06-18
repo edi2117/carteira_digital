@@ -9,7 +9,7 @@ export const useDashboardStore = defineStore('dashboard', () => {
   async function fetchSummary() {
     loading.value = true
     try {
-      const { data } = await api.get('/dashboard')
+      const { data } = await api.get('/dashboard/summary')
       summary.value = data
     } finally {
       loading.value = false

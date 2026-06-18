@@ -6,6 +6,10 @@ use App\Http\Controllers\Api\TransactionController;
 use App\Http\Controllers\Api\WalletController;
 use Illuminate\Support\Facades\Route;
 
+Route::get('/openapi', function () {
+    return response()->file(storage_path('api-docs/api-docs.json'));
+});
+
 Route::post('/register', [AuthController::class, 'register']);
 Route::post('/login', [AuthController::class, 'login']);
 

@@ -36,7 +36,7 @@ class WalletService
         }
 
         return DB::transaction(function () use ($wallet, $amount, $description) {
-            $wallet = $wallet->fresh()->lockForUpdate();
+            $wallet = Wallet::lockForUpdate()->findOrFail($wallet->id);
 
             if ($wallet->balance < $amount) {
                 throw new InsufficientFundsException();
@@ -54,7 +54,7 @@ class WalletService
         });
     }
 
-    public function getTransactionsQuery(Wallet $wallet, ?string $type = null, ?string $startDate = null, ?string $endDate = null)
+    public function getTransactionsQuery(Wallet $wallet, ?string $type = null, ?string $startDate = null, ?string $endDate = null, ?string $search = null)
     {
         $query = $wallet->transactions()->orderBy('created_at', 'desc');
 
@@ -68,6 +68,10 @@ class WalletService
 
         if ($endDate) {
             $query->whereDate('created_at', '<=', $endDate);
+        }
+
+        if ($search) {
+            $query->where('description', 'like', "%{$search}%");
         }
 
         return $query;

@@ -11,7 +11,7 @@ export const useTransactionStore = defineStore('transactions', () => {
     loading.value = true
     try {
       const { data } = await api.get('/transactions', { params })
-      transactions.value = data.data
+      transactions.value = data.transactions
       meta.value = data.meta || {}
     } finally {
       loading.value = false

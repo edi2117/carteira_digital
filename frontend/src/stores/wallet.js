@@ -8,21 +8,21 @@ export const useWalletStore = defineStore('wallet', () => {
 
   async function fetchBalance() {
     try {
-      const { data } = await api.get('/wallet/balance')
-      balance.value = data.balance
+      const { data } = await api.get('/wallet')
+      balance.value = data.wallet.balance
     } catch {
     }
   }
 
   async function deposit(amount, description) {
     const { data } = await api.post('/wallet/deposit', { amount, description })
-    balance.value = data.balance
+    await fetchBalance()
     return data
   }
 
   async function withdraw(amount, description) {
     const { data } = await api.post('/wallet/withdraw', { amount, description })
-    balance.value = data.balance
+    await fetchBalance()
     return data
   }
 

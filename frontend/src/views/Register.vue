@@ -1,6 +1,6 @@
 <template>
   <GuestLayout>
-    <div class="bg-navy-800 rounded-xl p-8 border border-navy-700">
+    <div class="m-8 bg-navy-800 rounded-xl p-8 border border-navy-700">
       <h2 class="text-2xl font-bold text-white mb-6 text-center">Criar Conta</h2>
       <AlertMessage :message="error" type="error" />
       <form @submit.prevent="handleRegister" class="space-y-4 mt-4">

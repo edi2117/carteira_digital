@@ -12,13 +12,13 @@
         <option value="withdraw">Saques</option>
       </select>
       <input
-        v-model="filters.date_from"
+        v-model="filters.start_date"
         type="date"
         @change="fetchData(1)"
         class="px-4 py-2 rounded-lg bg-navy-800 border border-navy-700 text-white text-sm focus:outline-none focus:border-blue-500"
       />
       <input
-        v-model="filters.date_to"
+        v-model="filters.end_date"
         type="date"
         @change="fetchData(1)"
         class="px-4 py-2 rounded-lg bg-navy-800 border border-navy-700 text-white text-sm focus:outline-none focus:border-blue-500"
@@ -55,8 +55,8 @@ const loading = ref(false)
 
 const filters = reactive({
   type: '',
-  date_from: '',
-  date_to: '',
+  start_date: '',
+  end_date: '',
   search: '',
 })
 

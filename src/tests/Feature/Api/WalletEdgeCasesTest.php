@@ -62,7 +62,7 @@ class WalletEdgeCasesTest extends TestCase
             ->postJson('/api/wallet/deposit', ['amount' => 9999999.99]);
 
         $response->assertStatus(201);
-        $this->assertEquals(10000999.99, $this->user->wallet->fresh()->balance);
+        $this->assertEquals('10000099.99', $this->user->wallet->fresh()->balance);
     }
 
     public function test_exact_balance_withdraw(): void
