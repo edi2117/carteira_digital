@@ -6,7 +6,7 @@ COPY frontend/ .
 RUN npm run build
 
 FROM php:8.4-fpm-alpine AS base
-RUN apk add --no-cache nginx supervisor curl linux-headers && \
+RUN apk add --no-cache nginx supervisor curl linux-headers postgresql-dev && \
     docker-php-ext-install pdo pdo_mysql pdo_pgsql bcmath
 COPY --from=composer:latest /usr/bin/composer /usr/bin/composer
 
