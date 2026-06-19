@@ -3,7 +3,7 @@ WORKDIR /app
 COPY frontend/package*.json ./
 RUN npm ci
 COPY frontend/ .
-RUN npm run build
+RUN VITE_API_URL=/api npm run build
 
 FROM php:8.4-fpm-alpine AS base
 RUN apk add --no-cache nginx supervisor curl linux-headers postgresql-dev && \
