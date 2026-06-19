@@ -1,15 +1,18 @@
 <template>
   <AuthLayout>
-    <h2 class="text-2xl font-bold text-white mb-6">Sacar</h2>
-    <AlertMessage :message="success" type="success" />
-    <AlertMessage :message="error" type="error" />
+    <h2 class="text-2xl font-bold text-white">Sacar</h2>
+    <div class="h-12">
+      <AlertMessage :message="success" type="success" />
+      <AlertMessage :message="error" type="error" />
+    </div>
     <BalanceCard :balance="wallet.balance" />
     <form @submit.prevent="handleWithdraw" class="mt-6 bg-navy-800 rounded-xl p-6 border border-navy-700 max-w-md">
       <div class="mb-4">
         <label class="block text-sm text-slate-400 mb-1">Valor (R$)</label>
         <input
-          v-model="amount" type="number" step="0.01" min="1" required
-          class="w-full px-4 py-3 rounded-lg bg-navy-900 border border-navy-700 text-white text-sm focus:outline-none focus:border-red-500 transition-colors"
+          type="text" inputmode="decimal" required
+          :value="amountDisplay" @input="onAmountInput"
+          class="w-full px-4 py-3 rounded-lg bg-navy-900 border border-navy-700 text-white text-sm focus:outline-none focus:border-green-500 transition-colors"
           placeholder="0,00"
         />
       </div>
@@ -32,11 +35,14 @@
 </template>
 
 <script setup>
-import { ref, onMounted } from 'vue'
+
+import { ref, computed, onMounted } from 'vue'
 import AuthLayout from '../layouts/AuthLayout.vue'
 import BalanceCard from '../components/BalanceCard.vue'
 import AlertMessage from '../components/AlertMessage.vue'
 import { useWalletStore } from '../stores/wallet'
+import { usevalueBRL } from '../composables/usevalueBRL.js'
+
 
 const wallet = useWalletStore()
 const amount = ref('')
@@ -45,16 +51,31 @@ const loading = ref(false)
 const error = ref('')
 const success = ref('')
 
+const amountCents = ref(0)
+
+const { formatValueBRL } = usevalueBRL()
+
+const amountDisplay = computed(() => {
+  return amountCents.value.toLocaleString('pt-BR', {
+    minimumFractionDigits: 2
+  })
+})
+
+function onAmountInput(e) {
+  amountCents.value = formatValueBRL(e.target.value)
+}
+
 onMounted(() => wallet.fetchBalance())
 
 async function handleWithdraw() {
   loading.value = true
   error.value = ''
   success.value = ''
+
   try {
-    await wallet.withdraw(amount.value, description.value)
+    await wallet.withdraw(amountCents.value.replace(/\D/g, '') / 100, description.value)
     success.value = 'Saque realizado com sucesso!'
-    amount.value = ''
+    amountCents.value = ''
     description.value = ''
   } catch (err) {
     error.value = err.response?.data?.message || 'Erro ao sacar'

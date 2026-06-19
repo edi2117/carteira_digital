@@ -1,6 +1,9 @@
 <template>
   <AuthLayout>
     <h2 class="text-2xl font-bold text-white mb-6">Histórico de Transações</h2>
+    <div class="mb-6">
+      <BalanceCard :balance="wallet.balance" />
+    </div>
     <div class="flex flex-wrap gap-4 mb-6">
       <select
         v-model="filters.type"
@@ -45,11 +48,14 @@
 <script setup>
 import { ref, reactive, onMounted } from 'vue'
 import AuthLayout from '../layouts/AuthLayout.vue'
+import BalanceCard from '../components/BalanceCard.vue'
 import TransactionTable from '../components/TransactionTable.vue'
 import Pagination from '../components/Pagination.vue'
 import LoadingSpinner from '../components/LoadingSpinner.vue'
+import { useWalletStore } from '../stores/wallet'
 import { useTransactionStore } from '../stores/transactions'
 
+const wallet = useWalletStore()
 const store = useTransactionStore()
 const loading = ref(false)
 
@@ -72,5 +78,8 @@ async function fetchData(page = 1) {
   loading.value = false
 }
 
-onMounted(() => fetchData())
+onMounted(() => {
+  wallet.fetchBalance()
+  fetchData()
+})
 </script>

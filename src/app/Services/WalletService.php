@@ -90,13 +90,29 @@ class WalletService
 
         $recentTransactions = $wallet->transactions()
             ->orderBy('created_at', 'desc')
-            ->limit(5)
+            ->limit(10)
             ->get();
+
+        $monthlySeries = $wallet->transactions()
+            ->selectRaw("YEAR(created_at) as yr, MONTH(created_at) as mo")
+            ->selectRaw("SUM(CASE WHEN type = 'deposit' THEN amount ELSE 0 END) as deposits")
+            ->selectRaw("SUM(CASE WHEN type = 'withdraw' THEN amount ELSE 0 END) as withdrawals")
+            ->where('created_at', '>=', now()->subMonths(12))
+            ->groupBy('yr', 'mo')
+            ->orderBy('yr')
+            ->orderBy('mo')
+            ->get()
+            ->map(fn($row) => [
+                'month' => sprintf('%04d-%02d', $row->yr, $row->mo),
+                'deposits' => (float) $row->deposits,
+                'withdrawals' => (float) $row->withdrawals,
+            ]);
 
         return [
             'balance' => $balance,
             'month_deposits' => (float) ($monthTotals->total_deposits ?? 0),
             'month_withdrawals' => (float) ($monthTotals->total_withdrawals ?? 0),
+            'monthly_series' => $monthlySeries,
             'recent_transactions' => $recentTransactions,
         ];
     }

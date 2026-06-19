@@ -20,3 +20,18 @@ html, body, #app {
   background-color: #0f172a;
   color: #e2e8f0;
 }
+
+canvas {
+  box-sizing: border-box;
+}
+
+.chart-box {
+  position: relative;
+  height: 300px;
+}
+
+.chart-box > div {
+  position: relative;
+  height: 100%;
+  width: 100%;
+}
