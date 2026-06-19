@@ -99,7 +99,7 @@ class WalletService
             ->orderBy('created_at')
             ->get();
 
-        $grouped = $allSeries->groupBy(fn($t) => $t->dt->format('Y-m'));
+        $grouped = $allSeries->groupBy(fn($t) => \Carbon\Carbon::parse($t->dt)->format('Y-m'));
         $monthlySeries = collect();
         for ($i = 11; $i >= 0; $i--) {
             $month = $now->copy()->subMonths($i)->format('Y-m');
