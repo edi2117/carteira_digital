@@ -43,6 +43,7 @@ class DashboardController extends Controller
             'balance' => $data['balance'],
             'month_deposits' => $data['month_deposits'],
             'month_withdrawals' => $data['month_withdrawals'],
+            'monthly_series' => $data['monthly_series'],
             'recent_transactions' => TransactionResource::collection($data['recent_transactions']),
         ]);
     }

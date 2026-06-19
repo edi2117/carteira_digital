@@ -40,28 +40,25 @@ import AuthLayout from '../layouts/AuthLayout.vue'
 import BalanceCard from '../components/BalanceCard.vue'
 import AlertMessage from '../components/AlertMessage.vue'
 import { useWalletStore } from '../stores/wallet'
+import { usevalueBRL } from '../composables/usevalueBRL.js'
 
-const wallet = useWalletStore()
+
 const amountCents = ref(0)
 const description = ref('')
 const loading = ref(false)
 const error = ref('')
 const success = ref('')
+const wallet = useWalletStore()
+const { formatValueBRL } = usevalueBRL()
 
 const amountDisplay = computed(() => {
-  if (!amountCents.value) return ''
   return amountCents.value.toLocaleString('pt-BR', {
     minimumFractionDigits: 2
   })
 })
 
 function onAmountInput(e) {
-    const v = ((e.target.value.replace(/\D/g, '') / 100).toFixed(2) + '').split('.');
-    const m = v[0].split('').reverse().join('').match(/.{1,3}/g);
-    for (let i = 0; i < m.length; i++)
-        m[i] = m[i].split('').reverse().join('') + '.';
-    const r = m.reverse().join('');
-    amountCents.value  = r.substring(0, r.lastIndexOf('.')) + ',' + v[1];
+  amountCents.value = formatValueBRL(e.target.value)
 }
 
 onMounted(() => wallet.fetchBalance())
