@@ -8,7 +8,6 @@ nginx/default.conf
 php/Dockerfile
 frontend/Dockerfile.dev
 frontend/node_modules
-frontend/src
 src/vendor
 src/node_modules
 src/.env
