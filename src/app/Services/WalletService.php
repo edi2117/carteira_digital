@@ -79,13 +79,13 @@ class WalletService
 
     public function getDashboardData(Wallet $wallet): array
     {
+        $now = now();
         $balance = $wallet->balance;
 
         $monthTotals = $wallet->transactions()
             ->selectRaw("SUM(CASE WHEN type = 'deposit' THEN amount ELSE 0 END) as total_deposits")
             ->selectRaw("SUM(CASE WHEN type = 'withdraw' THEN amount ELSE 0 END) as total_withdrawals")
-            ->whereMonth('created_at', now()->month)
-            ->whereYear('created_at', now()->year)
+            ->whereBetween('created_at', [$now->startOfMonth()->toDateTimeString(), $now->copy()->endOfMonth()->toDateTimeString()])
             ->first();
 
         $recentTransactions = $wallet->transactions()
@@ -93,20 +93,23 @@ class WalletService
             ->limit(10)
             ->get();
 
-        $monthlySeries = $wallet->transactions()
-            ->selectRaw("YEAR(created_at) as yr, MONTH(created_at) as mo")
-            ->selectRaw("SUM(CASE WHEN type = 'deposit' THEN amount ELSE 0 END) as deposits")
-            ->selectRaw("SUM(CASE WHEN type = 'withdraw' THEN amount ELSE 0 END) as withdrawals")
-            ->where('created_at', '>=', now()->subMonths(12))
-            ->groupBy('yr', 'mo')
-            ->orderBy('yr')
-            ->orderBy('mo')
-            ->get()
-            ->map(fn($row) => [
-                'month' => sprintf('%04d-%02d', $row->yr, $row->mo),
-                'deposits' => (float) $row->deposits,
-                'withdrawals' => (float) $row->withdrawals,
+        $allSeries = $wallet->transactions()
+            ->selectRaw("created_at as dt, type, amount")
+            ->where('created_at', '>=', $now->copy()->subMonths(12)->startOfMonth()->toDateTimeString())
+            ->orderBy('created_at')
+            ->get();
+
+        $grouped = $allSeries->groupBy(fn($t) => $t->dt->format('Y-m'));
+        $monthlySeries = collect();
+        for ($i = 11; $i >= 0; $i--) {
+            $month = $now->copy()->subMonths($i)->format('Y-m');
+            $items = $grouped->get($month, collect());
+            $monthlySeries->push([
+                'month' => $month,
+                'deposits' => (float) $items->where('type', 'deposit')->sum('amount'),
+                'withdrawals' => (float) $items->where('type', 'withdraw')->sum('amount'),
             ]);
+        }
 
         return [
             'balance' => $balance,
