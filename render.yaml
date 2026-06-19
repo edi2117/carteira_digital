@@ -12,30 +12,33 @@ services:
         fromService:
           name: carteira-api
           type: web
-          property: url
+          property: connectionString
       - key: DB_CONNECTION
         value: pgsql
       - key: DB_HOST
         fromService:
           name: carteira-db
-          type: pserv
+          type: postgres
           property: host
       - key: DB_PORT
-        value: 5432
+        fromService:
+          name: carteira-db
+          type: postgres
+          property: port
       - key: DB_DATABASE
         fromService:
           name: carteira-db
-          type: pserv
+          type: postgres
           property: database
       - key: DB_USERNAME
         fromService:
           name: carteira-db
-          type: pserv
+          type: postgres
           property: user
       - key: DB_PASSWORD
         fromService:
           name: carteira-db
-          type: pserv
+          type: postgres
           property: password
       - key: SESSION_DRIVER
         value: file
@@ -60,15 +63,16 @@ services:
         fromService:
           name: carteira-api
           type: web
-          property: url
+          property: connectionString
         suffix: /api
     routes:
       - type: rewrite
         source: /**/*
         destination: /index.html
 
-  - type: pserv
+  - type: postgres
     name: carteira-db
     plan: free
-    env: postgres
+    databaseName: carteira
+    userName: carteira
     autoDeploy: false
